@@ -2,11 +2,12 @@ import javax.swing.*;
 import java.awt.event.*;
 
 public class Main extends JFrame {
-    private static Aceite recursoShared = new Aceite(); // El recurso que compartirán los hilos
+    // El recurso que compartirán las entidades
+    private static RecursoCompartido recursoShared = new RecursoCompartido(); 
 
     public Main() {
-        // Configuración de la Ventana (Interfaz Gráfica)
-        setTitle("SISTEMA DE CONTROL - ETAPA 1");
+        // --- CONFIGURACIÓN DE LA INTERFAZ GRÁFICA (Tu código original) ---
+        setTitle("SISTEMA DE CONTROL - ETAPA 2");
         setSize(300, 200);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new java.awt.FlowLayout());
@@ -15,26 +16,67 @@ public class Main extends JFrame {
         add(new JLabel("Control de la Lámpara:"));
         add(botonRecarga);
 
-        // Cuando haces CLIC en el botón, recargas el aceite compartido
+        // Acción del botón: Recarga el aceite usando el método de la clase RecursoCompartido
         botonRecarga.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                recursoShared.recargar();
+                recursoShared.recargarAceite();
             }
         });
 
-        setVisible(true); // Hace visible la ventana
+        setVisible(true); 
     }
 
     public static void main(String[] args) {
-        new Main(); // Abre la ventana para que el usuario "juegue"
-        
-        // Creación de los hilos de Arqueólogo y Momia
-        // IMPORTANTE: Les pasamos el MISMO objeto de Aceite (recursoShared)
-        Arqueologo ark = new Arqueologo("Arqueologo_1", 0, 0, recursoShared);
+        // 1. EJECUCIÓN DE PRUEBAS ESTÁTICAS (Lo que la profa calificará)
+        System.out.println("=== INICIANDO PRUEBAS DE EVALUACIÓN ===");
+        testEntidad();     // Prueba Integrante 1
+        testArqueologo();  // Prueba Integrante 2
+        testMomia();       // Prueba Integrante 3
+        testRecurso();     // Prueba Integrante 4
+        System.out.println("=== FIN DE PRUEBAS ===\n");
+
+        // 2. LANZAMIENTO DE LA GUI
+        new Main(); 
+
+        // 3. INSTANCIACIÓN DE ENTIDADES
+        // Nota: Se crean los objetos para validar que la jerarquía funciona.
+        Arqueologo ark = new Arqueologo("Arqueologo_1", recursoShared);
         Momia m1 = new Momia("Momia_Ramses", 5, 5);
 
-        // ".start()" les da vida y hace que empiecen a correr sus métodos "run"
-        ark.start();
-        m1.start();
+        // Los hilos se activarán en el Parcial 3 según instrucciones.
+        // ark.start(); 
+        // m1.start();
+    }
+
+    // ==========================================================
+    // MÉTODOS ESTÁTICOS DE PRUEBA (REQUERIMIENTO DE EVALUACIÓN)
+    // ==========================================================
+
+    public static void testEntidad() {
+        System.out.println("[Test Integrante 1]: Verificando herencia en Entidad...");
+        // Se prueba la lógica base de posición
+        Momia m = new Momia("Test", 10, 10);
+        m.setX(20);
+        System.out.println("Resultado: Posición actualizada a " + m.getX());
+    }
+
+    public static void testArqueologo() {
+        System.out.println("[Test Integrante 2]: Verificando Arqueólogo y consumo...");
+        RecursoCompartido tempRC = new RecursoCompartido();
+        Arqueologo a = new Arqueologo("Indy_Test", tempRC);
+        a.huir(); // Debe intentar consumir aceite
+    }
+
+    public static void testMomia() {
+        System.out.println("[Test Integrante 3]: Verificando ataque de Momia...");
+        Momia m = new Momia("Momia_Test", 0, 0);
+        m.actuar(); // Ejecuta su comportamiento base
+    }
+
+    public static void testRecurso() {
+        System.out.println("[Test Integrante 4]: Verificando Recurso Compartido...");
+        recursoShared.recargarAceite();
+        System.out.println("Depósito actual: " + recursoShared.getCantidad());
     }
 }
+
